@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, viewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, ElementRef, signal, viewChild } from '@angular/core';
 
 //importamos mapbox
 import mapboxgl from 'mapbox-gl'; // or "const mapboxgl = require('mapbox-gl');"
@@ -35,6 +35,15 @@ export class FullscreenMapPageComponent implements AfterViewInit{
 
   // 'map' es la referencia al div del .html
   divElement = viewChild<ElementRef>('map');
+  map = signal<mapboxgl.Map|null>(null);
+
+  zoom = signal(2);
+
+  zoomEffect = effect(() => {
+    if(!this.map()) return;
+    //this.map()!.zoomTo(this.zoom()); animación dinámica
+    this.map()!.setZoom(this.zoom());
+  });
 
   async ngAfterViewInit() {
     if(!this.divElement()?.nativeElement) return;
@@ -47,8 +56,10 @@ export class FullscreenMapPageComponent implements AfterViewInit{
     const map = new mapboxgl.Map({
       container: element, // container ID
       style: 'mapbox://styles/mapbox/streets-v12', // style URL
-      center: [-74.5, 40], // starting position [lng, lat]
-      zoom: 9, // starting zoom
+      center: [-3.7038, 40.4168], // starting position [lng, lat]
+      zoom: this.zoom(), // starting zoom
     });
+
+    this.map.set(map);
   }
 }
