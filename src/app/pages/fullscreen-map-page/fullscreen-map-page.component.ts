@@ -3,13 +3,14 @@ import { AfterViewInit, Component, effect, ElementRef, signal, viewChild } from 
 //importamos mapbox
 import mapboxgl from 'mapbox-gl'; // or "const mapboxgl = require('mapbox-gl');"
 import { environment } from '../../../environments/environment';
+import { DecimalPipe } from '@angular/common';
 
 //Cogemos el token de nuestro archivo enviroments
 mapboxgl.accessToken = environment.mapboxKey
 
 @Component({
   selector: 'app-fullscreen-map-page',
-  imports: [],
+  imports: [DecimalPipe],
   templateUrl: './fullscreen-map-page.component.html',
   styles:`
     div {
@@ -60,6 +61,18 @@ export class FullscreenMapPageComponent implements AfterViewInit{
       zoom: this.zoom(), // starting zoom
     });
 
+    this.map.set(map);
+    this.mapListeners(map);
+  }
+
+    //Crear el listener para que cada vez que el zoom cambie y no sea con la barra que hemos puesto
+    // nos notifique y con esta notificación cambiamos la señal de de la barra
+  mapListeners(map: mapboxgl.Map){
+    //Cambia el número del zoom en el div cuando termina de hacer zoom
+    map.on('zoomend', (event) => {
+      const newZoom = event.target.getZoom();
+      this.zoom.set(newZoom);
+    });
     this.map.set(map);
   }
 }

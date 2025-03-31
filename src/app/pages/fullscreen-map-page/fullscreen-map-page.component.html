@@ -3,7 +3,8 @@
 <section id="controls">
   <h2 class="text-2xl font-bold text-black mb-2">
     Zoom
-    <small class="text-gray-500 font-normal">{{zoom()}}</small>
+    <!-- Para que en el zoom nos aparezca solo el numero entero el DecimalPipe con=> number: '1.0-0' -->
+    <small class="text-gray-500 font-normal">{{zoom() | number: '1.0-0'}}</small>
   </h2>
   <input
     type="range"
