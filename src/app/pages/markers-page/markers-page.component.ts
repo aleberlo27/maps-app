@@ -1,26 +1,30 @@
 import { AfterViewInit, Component, ElementRef, signal, viewChild } from '@angular/core';
 //importamos mapbox
-import mapboxgl from 'mapbox-gl';
+import mapboxgl, { LngLatLike, MapMouseEvent } from 'mapbox-gl';
 import { environment } from '../../../environments/environment';
+import { map } from 'rxjs';
+import {v4 as UUIDv4} from 'uuid';
+import { JsonPipe } from '@angular/common';
 
 //Cogemos el token de nuestro archivo enviroments
 mapboxgl.accessToken = environment.mapboxKey
 
+interface Marker{
+  id: string,
+  mapboxMarker: mapboxgl.Marker
+}
+
+
 @Component({
   selector: 'app-markers-page',
-  imports: [],
+  imports: [JsonPipe],
   templateUrl: './markers-page.component.html',
-  styles:`
-    div {
-        width: 100vw;
-        height: calc( 100vh - 64px);
-    }
-  `
 })
 export class MarkersPageComponent implements AfterViewInit{
 
   divElement = viewChild<ElementRef>('map');
   map = signal<mapboxgl.Map|null>(null);
+  markers = signal<Marker[]>([]);
 
   async ngAfterViewInit() {
     if(!this.divElement()?.nativeElement) return;
@@ -36,7 +40,7 @@ export class MarkersPageComponent implements AfterViewInit{
       center: [-2.141854, 40.065359],
       zoom: 16,
     });
-
+    /*
     const marker = new mapboxgl.Marker({
       draggable: false, //Propiedad para que se pueda mover el marcador
       color: '#000'
@@ -47,12 +51,55 @@ export class MarkersPageComponent implements AfterViewInit{
     marker.on('dragend', (event) => {
       console.log(event);
     });
+    */
 
     this.mapListeners(map);
   }
 
   mapListeners(map: mapboxgl.Map){
-    console.log('object');
+    map.on('click', (event) => this.mapClick(event));
+    this.map.set(map);
   }
 
+  mapClick(event: mapboxgl.MapMouseEvent){
+    //controlamos que el mapa se haya creado
+    if(!this.map()) return;
+
+    //Guardamos el mapa en una constante
+    const map = this.map()!;
+
+    //Crear un color de forma random
+    const color = '#xxxxxx'.replace(/x/g, (y) =>
+      ((Math.random() * 16) | 0).toString(16)
+    );
+    //Guardamos las coordenadas en una constante
+    const coords = event.lngLat;
+
+    //Creamos el marcador
+    const marker = new mapboxgl.Marker({
+      draggable: false, //Propiedad para que se pueda mover el marcador
+      color: color,
+    })
+    .setLngLat(coords)
+    .addTo(map);
+
+    const newMarker : Marker = {
+      id: UUIDv4(),
+      mapboxMarker: marker
+    }
+
+
+    this.markers.update(markers => [newMarker, ...markers]);
+    console.log(this.markers());
+  }
+
+
+  //Creamos este método para poder volver al marcador que hay en el <div> de Marcadores
+  flyToMarker(lngLat: LngLatLike){
+    if(!this.map()) return;
+
+    this.map()?.flyTo({
+      center: lngLat,
+    });
+  }
 }
