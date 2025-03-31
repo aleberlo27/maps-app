@@ -84,6 +84,14 @@ export class FullscreenMapPageComponent implements AfterViewInit{
       //console.log({center});
       this.coordinates.set(center);
     });
+
+    //Con esto hacemos que cuando clique en el fullScreen (Se crea con este addControl) sea el foco completo
+    map.addControl( new mapboxgl.FullscreenControl());
+    //Un + y - (como la barra que hemos creado nosotros) para controlar el zoom
+    map.addControl( new mapboxgl.NavigationControl());
+    //Para ver la escala en metros
+    map.addControl( new mapboxgl.ScaleControl());
+
     this.map.set(map);
   }
 }
