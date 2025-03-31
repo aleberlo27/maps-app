@@ -6,3 +6,7 @@ levantar proyecto en Dev
 2. Instalarlas dependencias
 3. Generar el archivo `.env` basado en el `.env.template`
 4. Ejecutar el comando `npm run set-envs`
+
+# Url
+
+https://app-maps-abl.netlify.app/#/fullscreen
