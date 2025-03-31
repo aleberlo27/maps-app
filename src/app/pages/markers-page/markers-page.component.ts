@@ -5,15 +5,10 @@ import { environment } from '../../../environments/environment';
 import { map } from 'rxjs';
 import {v4 as UUIDv4} from 'uuid';
 import { JsonPipe } from '@angular/common';
+import { Marker } from '../../interfaces/interfaces.interfaces';
 
 //Cogemos el token de nuestro archivo enviroments
 mapboxgl.accessToken = environment.mapboxKey
-
-interface Marker{
-  id: string,
-  mapboxMarker: mapboxgl.Marker
-}
-
 
 @Component({
   selector: 'app-markers-page',
