@@ -12,6 +12,7 @@
     <div
       class="form-control"
       (click)="flyToMarker(marker.mapboxMarker.getLngLat())"
+      (dblclick)="deleteMarker(marker)"
     >
       <label class="label cursor-pointer">
         <span class="label-text text-black text-xs">
